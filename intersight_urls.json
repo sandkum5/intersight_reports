@@ -1,0 +1,102 @@
+{
+    "fi": {
+        "path": "network/ElementSummaries",
+        "query_parameters": "$filter=SwitchType eq FabricInterconnect&$select=AdminEvacState,BundleVersion,FirmwareVersion,EthernetSwitchingMode,FcSwitchingMode,OutOfBandIpAddress,ManagementMode,Name,SwitchId,Model,Serial,SwitchProfileName,NumEtherPorts,NumEtherPortsConfigured,NumEtherPortsLinkUp,NumFcPorts,NumFcPortsConfigured,NumFcPortsLinkUp,NumExpansionModules,OperEvacState,Operability,ReservedVlanStartId,TotalMemory,UserLabel"
+    },
+    "chassis": {
+        "path": "equipment/Chasses",
+        "query_parameters": "$select=Name,Model,ChassisId,Serial,ManagementMode,Tags,UserLabel,ConnectionStatus,OperState,ProductName"
+    },
+    "iom": {
+        "path": "equipment/IoCards",
+        "query_parameters": "$select=ConnectionPath,Description,Dn,Parent,Model,ModuleId,OperState,Pid,Presence,ProductName,Serial,Side,Version"
+    },
+    "x-fabric_modules": {
+        "path": "equipment/ExpanderModules",
+        "query_parameters": "$select=Parent,Dn,Model,ModuleId,OperState,Presence,Serial"
+    },
+    "motherboards": {
+        "path": "compute/Boards",
+        "query_parameters": "$select=Parent,Serial,Model"
+    },
+    "blades": {
+        "path": "compute/Blades",
+        "query_parameters": "$select=Parent,Board,AssetTag,CpuCapacity,AvailableMemory,TotalMemory,Dn,Firmware,FrontPanelLockState,MgmtIpAddress,Model,Name,NumCpus,NumCpuCores,NumCpuCoresEnabled,NumThreads,NumAdaptors,NumEthHostInterfaces,NumFcHostInterfaces,OperPowerState,Personality,PlatformType,Presence,Serial,ServerId,SlotId,ServiceProfile,TunneledKvm,UserLabel,Uuid"
+    },
+    "racks": {
+        "path": "compute/RackUnits",
+        "query_parameters": "$select=Board,AssetTag,CpuCapacity,AvailableMemory,TotalMemory,Firmware,FrontPanelLockState,MgmtIpAddress,Model,Name,NumCpus,NumCpuCores,NumCpuCoresEnabled,NumThreads,NumAdaptors,NumEthHostInterfaces,NumFcHostInterfaces,OperPowerState,Personality,PlatformType,Presence,Serial,ServerId,SlotId,ServiceProfile,TunneledKvm,UserLabel,Uuid"
+    },
+    "psu": {
+        "path": "equipment/Psus",
+        "query_parameters": "$select=Parent,Dn,Model,Serial,Moid,ObjectType,OperState,PartNumber,Presence,PsuId,Voltage"
+    },
+    "fan_module": {
+        "path": "equipment/FanModules",
+        "query_parameters": "$select=Parent,Dn,Moid,OperState,Presence,ModuleId"
+    },
+    "fan": {
+        "path": "equipment/Fans",
+        "query_parameters": "$select=Parent,Dn,FanId,FanModuleId,Model,OperState,Presence"
+    },
+    "cpu": {
+        "path": "processor/Units",
+        "query_parameters": "$select=Parent,Architecture,Description,Dn,Model,NumCores,NumCoresEnabled,NumThreads,OperState,Pid,Presence,ProcessorId,Speed"
+    },
+    "memory": {
+        "path": "memory/Units",
+        "query_parameters": "$select=Parent,ArrayId,Bank,Capacity,ClassId,Clock,Description,Dn,FormFactor,Location,MemoryId,Model,Moid,ObjectType,OperState,Pid,Presence,Serial,Type,Vendor,Width"
+    },
+    "memory_array": {
+        "path": "memory/Arrays",
+        "query_parameters": "$select=Parent,Dn,CpuId,ArrayId,CurrentCapacity,ErrorCorrection,Presence"
+    },
+    "network_adapter": {
+        "path": "adapter/Units", 
+        "query_parameters": "$select=Parent,AdapterId,Dn,Model,PciSlot,Presence,Vendor"
+    },
+    "storage_controller": {
+        "path": "storage/Controllers",
+        "query_parameters": "$select=Parent,ControllerId,Dn,Model,PciAddr,Presence,RaidSupport,Serial,Type,Vendor"
+    },
+    "physical_drive": {
+        "path": "storage/PhysicalDisks",
+        "query_parameters": "$select=Parent,BlockSize,Bootable,Description,DiskId,DiskState,Dn,DriveFirmware,EncryptionStatus,FailurePredicted,LinkSpeed,MediaErrorCount,Model,Pid,Operability,PartNumber,PercentLifeLeft,PhysicalBlockSize,Presence,Protocol,Serial,Size,Type,Vendor"
+    },
+    "virtual_drive": {
+        "path": "storage/VirtualDrives",
+        "query_parameters": "$select=AccessPolicy,ActualWriteCachePolicy,AvailableSize,BlockSize,Bootable,ConfigState,ConfiguredWriteCachePolicy,Dn,DriveCache,DriveSecurity,DriveState,IoPolicy,Moid,Name,Operability,Parent,Presence,ReadPolicy,Size,StorageVirtualDriveContainer,StripSize,Type,Uuid,VendorUuid,VirtualDriveId"
+    },
+    "tpm":{
+        "path": "equipment/Tpms",
+        "query_parameters": "$select=Parent,Dn,Model,Presence,Serial,TpmId,Version"
+    },
+    "pci_nodes": {
+        "path": "pci/Nodes",
+        "query_parameters": ""
+    },
+    "pci_devices": {
+        "path": "pci/Devices",
+        "query_parameters": "$select=Dn,FirmwareVersion,Model,Parent,Rn,Serial,SlotId,Vendor"
+    },
+    "transceivers":{
+        "path": "equipment/Transceivers",
+        "query_parameters": "$select=DomainGroupMoid,Moid,Name,Type,Serial,SwitchId,Dn,Model,ObjectType,OperSpeed,OperStateQual,Parent,SlotId,PortId,OperState,Presence,Status,InterfaceType,Vendor"
+    },
+    "Empty_Chassis_Slots": {
+        "path": "compute/Blades",
+        "query_parameters": "$select=Name"
+    },
+    "FI_Disk_Usage": {
+        "path": "storage/Items",
+        "query_parameters": "$filter=(Size ne 'nothing') and (NetworkElement ne 'null')&$expand=NetworkElement($select=SwitchId,Model,Serial),RegisteredDevice($select=DeviceHostname)&$select=NetworkElement,RegisteredDevice,Name,Size,Used"
+    },
+    "Contracts": {
+        "path": "asset/DeviceContractInformations",
+        "query_parameters": "$expand=Source($select=Dn,PlatformType,Model,Name,Serial,ManagementMode)&$select=Contract,ContractStatus,ContractStatusReason,ServiceDescription,ServiceLevel,ServiceStartDate,ServiceEndDate,SalesOrderNumber,PurchaseOrderNumber,PlatformType,DeviceType,DeviceId,Source"
+    },
+    "licenses": {
+        "path": "compute/PhysicalSummaries",
+        "query_parameters": "$select=Name,Model,Serial,Tags"
+    }
+}
