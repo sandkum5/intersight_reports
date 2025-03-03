@@ -1,6 +1,6 @@
 # intersight_reports
-Create following Intersight reports:
-- Inventory(FI, Chassis's, IOM's, Servers, PSUs, FANs, CPUs, DIMMs, etc.
+Create Intersight_report.xlsx file with below data:
+- Inventory - FI, Chassis's, IOM's, Servers, PSUs, FANs, CPUs, DIMMs, etc.
 - licensing info
 - Contract Info
 - FI Disk Usage
