@@ -126,17 +126,30 @@ def add_header_row(sheet, header_list):
         cell.fill = blue_fill
 
 
-def add_cell_data(sheet, data):
+# def add_cell_data(sheet, data):
+#     """
+#         Add Data in Sheet Cells
+#     """
+#     for row, item in enumerate(data, start=2):
+#         for column in range(1, len(list(item.keys()))+1):
+#             sheet.cell(row=row,column=column, value=list(item.values())[column-1])
+#             cell = sheet.cell(row=row, column=column)
+#             custom_font = Font(name='Calibri', size=14)  
+#             cell.font = custom_font
+#             # cell.alignment=Alignment(vertical='center')
+
+def add_cell_data(sheet, header_list, data):
     """
         Add Data in Sheet Cells
     """
     for row, item in enumerate(data, start=2):
-        for column in range(1, len(list(item.keys()))+1):
-            sheet.cell(row=row,column=column, value=list(item.values())[column-1])
-            cell = sheet.cell(row=row, column=column)
+        for column_name in item.keys():
+            index = header_list.index(column_name)
+            sheet.cell(row=row,column=index+1, value=item[column_name])
+            cell = sheet.cell(row=row, column=index+1)
             custom_font = Font(name='Calibri', size=14)  
             cell.font = custom_font
-            # cell.alignment=Alignment(vertical='center')
+
 
 
 def write_to_excel(file_name, sheet_name, header_list, data):
@@ -152,7 +165,7 @@ def write_to_excel(file_name, sheet_name, header_list, data):
 
     # Write Sheet Cells
     # add_cell_data(sheet, column_len, data)
-    add_cell_data(sheet, data)
+    add_cell_data(sheet, header_list, data)
     
     # Save and Close Workbook
     workbook.save(file_name)
@@ -350,3 +363,32 @@ def get_licenses(data):
                 license_dict["LicenseTier"] = d[license_key]
         license_data.append(license_dict)
     return license_data
+
+
+def get_sp_policies(data):
+    """
+        Get Server Profile and its associated Policies
+    """
+    sp_data = []
+    for d in data:
+        sp_dict = {}
+        sp_dict['SP_Name'] = d['Name']
+        sp_dict['SP_Moid'] = d['Moid']
+        sp_dict['TargetPlatform'] = d['TargetPlatform']
+        if 'AssociatedServer' in d.keys():
+            sp_dict['Server_Name'] = ""
+            sp_dict['Server_Serial'] = ""
+            sp_dict['Server_Model'] = ""
+        if 'AssociatedServer_Name' in d.keys():
+            sp_dict['Server_Name'] = d['AssociatedServer_Name']
+        if 'AssociatedServer_Serial' in d.keys():
+            sp_dict['Server_Serial'] = d['AssociatedServer_Serial']
+        if 'AssociatedServer_Model' in d.keys():
+            sp_dict['Server_Model'] = d['AssociatedServer_Model']
+        for k,v in d.items():
+            if "ClassId" in k:
+                prefix = k.split("_ClassId")[0]
+                policy_key = f"{prefix}_Name"
+                sp_dict[v] = d[policy_key]                                                         
+        sp_data.append(sp_dict)
+    return sp_data
