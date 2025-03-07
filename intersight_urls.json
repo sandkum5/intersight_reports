@@ -98,5 +98,9 @@
     "licenses": {
         "path": "compute/PhysicalSummaries",
         "query_parameters": "$select=Name,Model,Serial,Tags"
+    },
+    "sp_policies": {
+        "path": "server/Profiles",
+        "query_parameters": "$expand=AssociatedServer($select=Name,Model,Serial),PolicyBucket($select=Name)&$select=Name,TargetPlatform,AssociatedServer,PolicyBucket"
     }
 }
