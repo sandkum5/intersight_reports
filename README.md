@@ -5,6 +5,7 @@ Create Intersight_report.xlsx file with below data:
 - Contract Info
 - FI Disk Usage
 - Empty Chassis Slots Info
+- Server Profile, Associated Server and Associated Policies 
 
 # Usage
 - Install Python Libraries: pip install requests jsonpath-ng openpyxl flatten-json
@@ -41,6 +42,7 @@ Creating Sheet: Empty_Chassis_Slots
 Creating Sheet: FI_Disk_Usage
 Creating Sheet: Contracts
 Creating Sheet: licenses
+Creating Sheet: sp_policies
 Creating Sheet: Hyperlinks
 ```
 
