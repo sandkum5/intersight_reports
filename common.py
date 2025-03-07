@@ -376,17 +376,19 @@ def get_sp_policies(data):
         sp_dict['SP_Moid'] = d['Moid']
         sp_dict['TargetPlatform'] = d['TargetPlatform']
         if 'AssociatedServer' in d.keys():
-            sp_dict['Server_Name'] = ""
-            sp_dict['Server_Serial'] = ""
-            sp_dict['Server_Model'] = ""
-        if 'AssociatedServer_Name' in d.keys():
-            sp_dict['Server_Name'] = d['AssociatedServer_Name']
-        if 'AssociatedServer_Serial' in d.keys():
-            sp_dict['Server_Serial'] = d['AssociatedServer_Serial']
-        if 'AssociatedServer_Model' in d.keys():
-            sp_dict['Server_Model'] = d['AssociatedServer_Model']
+            if d['AssociatedServer'] == None:
+                sp_dict['Server_Name'] = ""
+                sp_dict['Server_Serial'] = ""
+                sp_dict['Server_Model'] = ""
+        else:
+            if 'AssociatedServer_Name' in d.keys():
+                sp_dict['Server_Name'] = d['AssociatedServer_Name']
+            # if 'AssociatedServer_Serial' in d.keys():
+                sp_dict['Server_Serial'] = d['AssociatedServer_Serial']
+            # if 'AssociatedServer_Model' in d.keys():
+                sp_dict['Server_Model'] = d['AssociatedServer_Model']
         for k,v in d.items():
-            if "ClassId" in k:
+            if "ClassId" in k and "PolicyBucket" in k:
                 prefix = k.split("_ClassId")[0]
                 policy_key = f"{prefix}_Name"
                 sp_dict[v] = d[policy_key]                                                         
