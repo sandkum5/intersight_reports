@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-    Create Intersight Intersight_reports.xlsx file
+    Create Intersight Inventory.xlsx file
     Creates separate sheets for each component
     Components:
         FI, 
@@ -8,19 +8,16 @@
         PSU, Fan Modules, FANs, 
         Server, CPU, Memory, Network Adapters, Storage Controllers
             Physical Drive, Virtual Drive, TPM, PCI Devices
-    Additional Reports:
-    Contract Info
-    FI Disk Usage Info
-    License Info
-    Empty Chassis Slots Info  
+
 """
 import os
 import json
+from pprint import pprint
 from dotenv import load_dotenv, find_dotenv
 from common import get_token, get_data, parse_data
 from common import write_to_excel, remove_parameters, auto_size_columns
 from common import find_empty_slots, create_hyperlinks_sheet, set_default_sheet
-from common import get_licenses
+from common import get_licenses, get_sp_policies
 
 load_dotenv(find_dotenv())
 
@@ -32,7 +29,7 @@ if __name__ == '__main__':
     # Get oAuth Token
     token = get_token(client_id, client_secret)
 
-    with open('intersight_urls.json', 'r') as f:
+    with open('inventory_urls.json', 'r') as f:
         json_data = json.load(f)
 
     for k,v in json_data.items():
@@ -58,7 +55,7 @@ if __name__ == '__main__':
             parsed_data = remove_parameters(semi_parsed_data)
 
             # Write Flattened Data to a JSON file
-            data_file = f"./{k}.json"
+            data_file = f"./Data/{k}.json"
 
             if k == "Empty_Chassis_Slots":
                 data = find_empty_slots(parsed_data)
@@ -68,16 +65,27 @@ if __name__ == '__main__':
                 data = get_licenses(parsed_data)
                 parsed_data = data
             
+            if k == "sp_policies":
+                pprint(parsed_data)
+                data = get_sp_policies(parsed_data)
+                parsed_data = data
+            
             # Create Data json file
             with open(data_file, 'w') as f:
                 f.write(json.dumps(parsed_data))
 
             # Create Excel File
-            file_name = "./Intersight_reports.xlsx"   # Update
+            file_name = "./Data/Inventory.xlsx"   # Update
             sheet_name = k           # Update
         
             print(f"Creating Sheet: {k}")
-            header_list = list(parsed_data[0].keys())
+            header_list = []
+            for d in parsed_data:
+                for k in d.keys():
+                    if k not in header_list:
+                        header_list.append(k)
+
+            # header_list = list(parsed_data[0].keys())
 
             # for k,v in enumerate(json_data):
             #     row_data = list(v.values())
@@ -89,7 +97,7 @@ if __name__ == '__main__':
             auto_size_columns(file_name, sheet_name)
 
     # Create Hyperlinks Sheet
-    file_name = "./Intersight_reports.xlsx"
+    file_name = "./Data/Inventory.xlsx"
     print(f"Creating Sheet: Hyperlinks")
     create_hyperlinks_sheet(file_name)
 
