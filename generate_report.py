@@ -66,7 +66,7 @@ if __name__ == '__main__':
                 parsed_data = data
             
             if k == "sp_policies":
-                pprint(parsed_data)
+                # pprint(parsed_data)
                 data = get_sp_policies(parsed_data)
                 parsed_data = data
             
