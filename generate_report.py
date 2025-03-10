@@ -69,7 +69,11 @@ if __name__ == '__main__':
                 # pprint(parsed_data)
                 data = get_sp_policies(parsed_data)
                 parsed_data = data
-            
+
+            if k == "network_veths":
+                vnic_data = get_vnic_ethifs(client_id, client_secret, token, parsed_data)
+                parsed_data = vnic_data
+
             # Create Data json file
             with open(data_file, 'w') as f:
                 f.write(json.dumps(parsed_data))
