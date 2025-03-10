@@ -102,5 +102,9 @@
     "sp_policies": {
         "path": "server/Profiles",
         "query_parameters": "$expand=AssociatedServer($select=Name,Model,Serial),PolicyBucket($select=Name)&$select=Name,TargetPlatform,AssociatedServer,PolicyBucket"
+    },
+    "vnics": {
+        "path": "network/Vethernets",
+        "query_parameters": "$expand=NetworkElement($select=SwitchProfileName,Serial,SwitchId,Model,ManagementMode,Operability,AdminEvacState,OperEvacState)&$select=VethId,Description,BoundInterfaceDn,NetworkElement,OperState,OperReason,PinnedInterfaceDn"
     }
 }
