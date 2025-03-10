@@ -394,3 +394,88 @@ def get_sp_policies(data):
                 sp_dict[v] = d[policy_key]                                                         
         sp_data.append(sp_dict)
     return sp_data
+
+def get_vnic_ethifs(client_id, client_secret, token, fi_veth_data):
+    """
+        Get Virtual Ethernet Interfaces
+    """
+    api_count_url = "https://intersight.com/api/v1/vnic/EthIfs?$filter=LcpVnic ne 'null'&$count=True"
+    api_url = "https://intersight.com/api/v1/vnic/EthIfs?$filter=LcpVnic ne 'null'&$expand=Profile($select=Name,AssociatedServer%3B$expand=AssociatedServer($select=Name,Model,Serial)),EthQosPolicy($select=Mtu,Cos,Priority),FabricEthNetworkGroupPolicy($select=VlanSettings),LcpVnic($select=LanConnectivityPolicy%3B$expand=LanConnectivityPolicy($select=Name))&$select=Name,MacAddress,FailoverEnabled,VifId,StandbyVifId,Placement,Profile,EthQosPolicy,FabricEthNetworkGroupPolicy,LcpVnic"
+
+    # Intersight API Nested Data        
+    data = get_data(client_id, client_secret, token, api_count_url, api_url)
+    
+    if data:
+        # Flattened Data
+        semi_parsed_data = parse_data(data)
+        # Remove Parameters from Parsed Data before Writing
+        parsed_data = remove_parameters(semi_parsed_data)
+
+    vnic_data = []
+    for vnic in parsed_data:
+        vnic_dict = {}
+        vnic_dict["Cos"]                   = vnic["EthQosPolicy_Cos"]
+        vnic_dict["Mtu"]                   = vnic["EthQosPolicy_Mtu"]
+        vnic_dict["Priority"]              = vnic["EthQosPolicy_Priority"]
+        vnic_dict["AllowedVlans"]          = vnic["FabricEthNetworkGroupPolicy_0_VlanSettings_AllowedVlans"]
+        vnic_dict["NativeVlan"]            = vnic["FabricEthNetworkGroupPolicy_0_VlanSettings_NativeVlan"]
+        vnic_dict["QinqEnabled"]           = vnic["FabricEthNetworkGroupPolicy_0_VlanSettings_QinqEnabled"]
+        vnic_dict["QinqVlan"]              = vnic["FabricEthNetworkGroupPolicy_0_VlanSettings_QinqVlan"]
+        vnic_dict["FailoverEnabled"]       = vnic["FailoverEnabled"]
+        vnic_dict["LanConnectivityPolicy"] = vnic["LcpVnic_LanConnectivityPolicy_Name"]
+        vnic_dict["MacAddress"]            = vnic["MacAddress"]
+        vnic_dict["Moid"]                  = vnic["Moid"]
+        vnic_dict["Name"]                  = vnic["Name"]
+        vnic_dict["AutoPciLink"]           = vnic["Placement_AutoPciLink"]
+        vnic_dict["AutoSlotId"]            = vnic["Placement_AutoSlotId"]
+        vnic_dict["Slot_Id"]               = vnic["Placement_Id"]
+        vnic_dict["PciLink"]               = vnic["Placement_PciLink"]
+        vnic_dict["PciLinkAssignmentMode"] = vnic["Placement_PciLinkAssignmentMode"]
+        vnic_dict["SwitchId"]              = vnic["Placement_SwitchId"]
+        vnic_dict["Uplink"]                = vnic["Placement_Uplink"]
+        vnic_dict["Profile_Name"]          = vnic["Profile_Name"]
+        vnic_dict["StandbyVifId"]          = vnic["StandbyVifId"]
+        vnic_dict["VifId"]                 = vnic["VifId"]
+        for veth in fi_veth_data:
+            server_serial = veth["Description"].split(":")[1]
+            vnic_name = (veth["Description"].split()[3]).split(",")[0]
+            if "Profile_AssociatedServer" not in vnic.keys():
+                if (vnic["Profile_AssociatedServer_Serial"] == server_serial) and (vnic["Name"] == vnic_name) and (veth["VethId"] == vnic["VifId"]):
+                    vnic_dict["AssociatedServer_Model"]  = vnic["Profile_AssociatedServer_Model"]
+                    vnic_dict["AssociatedServer_Name"]   = vnic["Profile_AssociatedServer_Name"]
+                    vnic_dict["AssociatedServer_Serial"] = vnic["Profile_AssociatedServer_Serial"]
+                    vnic_dict["BoundInterfaceDn"]        = veth["BoundInterfaceDn"]
+                    vnic_dict["Veth_Description"]        = veth["Description"]
+                    vnic_dict["FI_AdminEvacState"]       = veth["NetworkElement_AdminEvacState"]
+                    vnic_dict["FI_ManagementMode"]       = veth["NetworkElement_ManagementMode"]
+                    vnic_dict["FI_Model"]                = veth["NetworkElement_Model"]
+                    vnic_dict["FI_OperEvacState"]        = veth["NetworkElement_OperEvacState"]
+                    vnic_dict["FI_Operability"]          = veth["NetworkElement_Operability"]
+                    vnic_dict["FI_Serial"]               = veth["NetworkElement_Serial"]
+                    vnic_dict["FI_SwitchId"]             = veth["NetworkElement_SwitchId"]
+                    vnic_dict["FI_SwitchProfileName"]    = veth["NetworkElement_SwitchProfileName"]
+                    vnic_dict["OperReason"]              = veth["OperReason"]
+                    vnic_dict["OperState"]               = veth["OperState"]
+                    vnic_dict["PinnedInterfaceDn"]       = veth["PinnedInterfaceDn"]
+                    vnic_dict["VethId"]                  = veth["VethId"]
+            else:
+                if (vnic["Name"] == vnic_name) and (veth["VethId"] == vnic["VifId"]):
+                    vnic_dict["AssociatedServer_Model"]  = ""
+                    vnic_dict["AssociatedServer_Name"]   = ""
+                    vnic_dict["AssociatedServer_Serial"] = ""
+                    vnic_dict["BoundInterfaceDn"]        = veth["BoundInterfaceDn"]
+                    vnic_dict["Veth_Description"]        = veth["Description"]
+                    vnic_dict["FI_AdminEvacState"]       = veth["NetworkElement_AdminEvacState"]
+                    vnic_dict["FI_ManagementMode"]       = veth["NetworkElement_ManagementMode"]
+                    vnic_dict["FI_Model"]                = veth["NetworkElement_Model"]
+                    vnic_dict["FI_OperEvacState"]        = veth["NetworkElement_OperEvacState"]
+                    vnic_dict["FI_Operability"]          = veth["NetworkElement_Operability"]
+                    vnic_dict["FI_Serial"]               = veth["NetworkElement_Serial"]
+                    vnic_dict["FI_SwitchId"]             = veth["NetworkElement_SwitchId"]
+                    vnic_dict["FI_SwitchProfileName"]    = veth["NetworkElement_SwitchProfileName"]
+                    vnic_dict["OperReason"]              = veth["OperReason"]
+                    vnic_dict["OperState"]               = veth["OperState"]
+                    vnic_dict["PinnedInterfaceDn"]       = veth["PinnedInterfaceDn"]
+                    vnic_dict["VethId"]                  = veth["VethId"]
+        vnic_data.append(vnic_dict)
+    return vnic_data
