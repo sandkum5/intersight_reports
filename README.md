@@ -5,7 +5,8 @@ Create Intersight_report.xlsx file with below data:
 - Contract Info
 - FI Disk Usage
 - Empty Chassis Slots Info
-- Server Profile, Associated Server and Associated Policies 
+- Server Profile, Associated Server and Associated Policies
+- vNIC and vHBA Info
 
 # Usage
 - Install Python Libraries: pip install requests jsonpath-ng openpyxl flatten-json
@@ -18,31 +19,33 @@ Sample Output:
 ```Python3
  % ./get_inventory.py
 Successfuly obtained a new token
-Creating Sheet: fi
-Creating Sheet: chassis
-Creating Sheet: iom
-Creating Sheet: x-fabric_modules
-Creating Sheet: motherboards
-Creating Sheet: blades
-Creating Sheet: racks
-Creating Sheet: psu
-Creating Sheet: fan_module
-Creating Sheet: fan
-Creating Sheet: cpu
-Creating Sheet: memory
-Creating Sheet: memory_array
-Creating Sheet: network_adapter
-Creating Sheet: storage_controller
-Creating Sheet: physical_drive
-Creating Sheet: virtual_drive
-Creating Sheet: tpm
-Creating Sheet: pci_devices
-Creating Sheet: transceivers
+Creating Sheet: FI
+Creating Sheet: Chassis
+Creating Sheet: IOM
+Creating Sheet: X-Fabric_modules
+Creating Sheet: Motherboards
+Creating Sheet: Blades
+Creating Sheet: Racks
+Creating Sheet: Psu
+Creating Sheet: Fan_module
+Creating Sheet: Fan
+Creating Sheet: CPU
+Creating Sheet: Memory
+Creating Sheet: Memory_array
+Creating Sheet: Network_adapter
+Creating Sheet: Storage_controller
+Creating Sheet: Physical_drive
+Creating Sheet: Virtual_drive
+Creating Sheet: Tpm
+Creating Sheet: Pci_devices
+Creating Sheet: Transceivers
 Creating Sheet: Empty_Chassis_Slots
 Creating Sheet: FI_Disk_Usage
 Creating Sheet: Contracts
-Creating Sheet: licenses
-Creating Sheet: sp_policies
+Creating Sheet: Licenses
+Creating Sheet: ServerProfile_policies
+Creating Sheet: Vnics
+Creating Sheet: Vhbas
 Creating Sheet: Hyperlinks
 ```
 
