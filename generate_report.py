@@ -18,6 +18,7 @@ from common import get_token, get_data, parse_data
 from common import write_to_excel, remove_parameters, auto_size_columns
 from common import find_empty_slots, create_hyperlinks_sheet, set_default_sheet
 from common import get_licenses, get_sp_policies
+from common import get_vnic_ethifs, get_vhba_fcifs
 
 load_dotenv(find_dotenv())
 
@@ -70,9 +71,13 @@ if __name__ == '__main__':
                 data = get_sp_policies(parsed_data)
                 parsed_data = data
 
-            if k == "network_veths":
+            if k == "vnics":
                 vnic_data = get_vnic_ethifs(client_id, client_secret, token, parsed_data)
                 parsed_data = vnic_data
+
+            if k == "vhbas":
+                vhba_data = get_vhba_fcifs(client_id, client_secret, token, parsed_data)
+                parsed_data = vhba_data
 
             # Create Data json file
             with open(data_file, 'w') as f:
