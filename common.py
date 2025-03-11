@@ -479,3 +479,94 @@ def get_vnic_ethifs(client_id, client_secret, token, fi_veth_data):
                     vnic_dict["VethId"]                  = veth["VethId"]
         vnic_data.append(vnic_dict)
     return vnic_data
+
+def get_vhba_fcifs(client_id, client_secret, token, fi_vfc_data):
+    """
+        Get vHBA Interfaces
+    """
+    api_count_url = "https://intersight.com/api/v1/vnic/FcIfs?$filter=ScpVhba ne 'null'&$count=True"
+    api_url = "https://intersight.com/api/v1/vnic/FcIfs?$filter=ScpVhba ne 'null'&$expand=FcAdapterPolicy($select=IoThrottleCount,LunCount,LunQueueDepth),FcNetworkPolicy($select=Name,VsanSettings),WwpnPool($select=Name),FcQosPolicy($select=Burst,Cos,Name,Priority,RateLimit),Profile($select=Name,AssociatedServer%3B$expand=AssociatedServer($select=Name,Model,Serial)),ScpVhba($select=SanConnectivityPolicy%3B$expand=SanConnectivityPolicy($select=Name))&$select=Name,Order,Placement,FcAdapterPolicy,FcNetworkPolicy,FcQosPolicy,Profile,ScpVhba,Type,VifId,Wwpn,WwpnAddressType,WwpnPool"
+
+    # Intersight API Nested Data        
+    data = get_data(client_id, client_secret, token, api_count_url, api_url)
+    
+    if data:
+        # Flattened Data
+        semi_parsed_data = parse_data(data)
+        # Remove Parameters from Parsed Data before Writing
+        parsed_data = remove_parameters(semi_parsed_data)
+
+        vhba_data = []
+        for vhba in parsed_data:
+            vhba_dict = {}
+            vhba_dict["IoThrottleCount"]                = vhba["FcAdapterPolicy_IoThrottleCount"]
+            vhba_dict["LunCount"]                       = vhba["FcAdapterPolicy_LunCount"]
+            vhba_dict["LunQueueDepth"]                  = vhba["FcAdapterPolicy_LunQueueDepth"]
+            vhba_dict["FcNetPolicy_Name"]               = vhba["FcNetworkPolicy_Name"]
+            vhba_dict["FcNetPolicy_Vsan_DefaultVlanId"] = vhba["FcNetworkPolicy_VsanSettings_DefaultVlanId"]
+            vhba_dict["FcNetPolicy_Vsan_Id"]            = vhba["FcNetworkPolicy_VsanSettings_Id"]
+            vhba_dict["Qos_Burst"]                      = vhba["FcQosPolicy_Burst"]
+            vhba_dict["Qos_Cos"]                        = vhba["FcQosPolicy_Cos"]
+            vhba_dict["QosPolicy_Name"]                 = vhba["FcQosPolicy_Name"]
+            vhba_dict["Qos_Priority"]                   = vhba["FcQosPolicy_Priority"]
+            vhba_dict["Qos_RateLimit"]                  = vhba["FcQosPolicy_RateLimit"]
+            vhba_dict["Moid"]                           = vhba["Moid"]
+            vhba_dict["Name"]                           = vhba["Name"]
+            vhba_dict["AutoPciLink"]                    = vhba["Placement_AutoPciLink"]
+            vhba_dict["AutoSlotId"]                     = vhba["Placement_AutoSlotId"]
+            vhba_dict["Placement_Id"]                   = vhba["Placement_Id"]
+            vhba_dict["PciLink"]                        = vhba["Placement_PciLink"]
+            vhba_dict["PciLinkAssignmentMode"]          = vhba["Placement_PciLinkAssignmentMode"]
+            vhba_dict["SwitchId"]                       = vhba["Placement_SwitchId"]
+            vhba_dict["Uplink"]                         = vhba["Placement_Uplink"]
+            vhba_dict["Profile_Name"]                   = vhba["Profile_Name"]
+            vhba_dict["SanConnPolicy_Name"]             = vhba["ScpVhba_SanConnectivityPolicy_Name"]
+            vhba_dict["VifId"]                          = vhba["VifId"]
+            vhba_dict["WwpnPool_Name"]                  = vhba["WwpnPool_Name"]
+            if "Profile_AssociatedServer" not in vhba.keys():
+                vhba_dict["AssociatedServer_Model"]  = vhba["Profile_AssociatedServer_Model"]
+                vhba_dict["AssociatedServer_Name"]   = vhba["Profile_AssociatedServer_Name"]
+                vhba_dict["AssociatedServer_Serial"] = vhba["Profile_AssociatedServer_Serial"]
+            else:
+                vhba_dict["AssociatedServer_Model"]  = ""
+                vhba_dict["AssociatedServer_Name"]   = ""
+                vhba_dict["AssociatedServer_Serial"] = ""
+            for vfc in fi_vfc_data:
+                server_serial = vfc["Description"].split(":")[1]
+                vhba_name = (vfc["Description"].split()[3]).split(",")[0]
+                if "Profile_AssociatedServer" not in vhba.keys():
+                    if (vhba["Profile_AssociatedServer_Serial"] == server_serial) and (vhba["Name"] == vhba_name) and (vfc["VfcId"] == vhba["VifId"]):
+                        vhba_dict["BoundInterfaceDn"]     = vfc["BoundInterfaceDn"]
+                        vhba_dict["Description"]          = vfc["Description"]
+                        vhba_dict["Moid"]                 = vfc["Moid"]
+                        vhba_dict["FI_AdminEvacState"]    = vfc["NetworkElement_AdminEvacState"]
+                        vhba_dict["FI_ManagementMode"]    = vfc["NetworkElement_ManagementMode"]
+                        vhba_dict["FI_Model"]             = vfc["NetworkElement_Model"]
+                        vhba_dict["FI_OperEvacState"]     = vfc["NetworkElement_OperEvacState"]
+                        vhba_dict["FI_Operability"]       = vfc["NetworkElement_Operability"]
+                        vhba_dict["FI_Serial"]            = vfc["NetworkElement_Serial"]
+                        vhba_dict["FI_SwitchId"]          = vfc["NetworkElement_SwitchId"]
+                        vhba_dict["FI_SwitchProfileName"] = vfc["NetworkElement_SwitchProfileName"]
+                        vhba_dict["OperReason"]           = vfc["OperReason"]
+                        vhba_dict["OperState"]            = vfc["OperState"]
+                        vhba_dict["PinnedInterfaceDn"]    = vfc["PinnedInterfaceDn"]
+                        vhba_dict["VfcId"]                = vfc["VfcId"]
+                else:
+                    if (vhba["Name"] == vhba_name) and (vfc["VfcId"] == vhba["VifId"]):
+                        vhba_dict["BoundInterfaceDn"]     = vfc["BoundInterfaceDn"]
+                        vhba_dict["Description"]          = vfc["Description"]
+                        vhba_dict["Moid"]                 = vfc["Moid"]
+                        vhba_dict["FI_AdminEvacState"]    = vfc["NetworkElement_AdminEvacState"]
+                        vhba_dict["FI_ManagementMode"]    = vfc["NetworkElement_ManagementMode"]
+                        vhba_dict["FI_Model"]             = vfc["NetworkElement_Model"]
+                        vhba_dict["FI_OperEvacState"]     = vfc["NetworkElement_OperEvacState"]
+                        vhba_dict["FI_Operability"]       = vfc["NetworkElement_Operability"]
+                        vhba_dict["FI_Serial"]            = vfc["NetworkElement_Serial"]
+                        vhba_dict["FI_SwitchId"]          = vfc["NetworkElement_SwitchId"]
+                        vhba_dict["FI_SwitchProfileName"] = vfc["NetworkElement_SwitchProfileName"]
+                        vhba_dict["OperReason"]           = vfc["OperReason"]
+                        vhba_dict["OperState"]            = vfc["OperState"]
+                        vhba_dict["PinnedInterfaceDn"]    = vfc["PinnedInterfaceDn"]
+                        vhba_dict["VfcId"]                = vfc["VfcId"]
+            vhba_data.append(vhba_dict)
+        return vhba_data
